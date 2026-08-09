@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function HeaderNavbar() {
-  const editorUrl = process.env.NEXT_PUBLIC_EDITOR_URL || "https://x-f-sigma.vercel.app/editor/mec";
+  const editorUrl = process.env.NEXT_PUBLIC_EDITOR_URL || "https://xite.co.in";
 
   return (
     <header className="fixed top-4 inset-x-0 z-50 mx-auto max-w-6xl px-4 pointer-events-auto">
