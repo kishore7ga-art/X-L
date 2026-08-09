@@ -16,47 +16,40 @@ export default function Preloader() {
   useEffect(() => {
     if (isHidden) return;
 
-    // Mark as shown in sessionStorage so scrolling & navigation never trigger preloader again
     try {
       if (typeof window !== "undefined") {
         sessionStorage.setItem("xite_preloader_has_shown", "true");
       }
     } catch {}
 
-    // 1. Force muted video autoplay with promise error handling
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.play().catch((err) => {
-        console.warn("Preloader video autoplay fallback:", err);
-      });
+      videoRef.current.play().catch(() => {});
     }
 
-    // 2. Smooth progress increment up to 100%
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 98) {
           clearInterval(interval);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 12 + 6);
+        return prev + Math.floor(Math.random() * 20 + 15);
       });
-    }, 100);
+    }, 50);
 
     const handleComplete = () => {
       setLoadingProgress(100);
-      setTimeout(() => {
-        setIsLoaded(true);
-        setTimeout(() => setIsHidden(true), 600);
-      }, 400);
+      setIsLoaded(true);
+      setTimeout(() => setIsHidden(true), 300);
     };
 
-    // Ensure preloader completes after max 2.5s fallback
-    const safetyTimeout = setTimeout(handleComplete, 2200);
+    // Instant safety fallback: max 800ms preloader duration
+    const safetyTimeout = setTimeout(handleComplete, 800);
 
     if (document.readyState === "complete") {
-      setTimeout(handleComplete, 1200);
+      setTimeout(handleComplete, 400);
     } else {
-      window.addEventListener("load", () => setTimeout(handleComplete, 800));
+      window.addEventListener("load", () => setTimeout(handleComplete, 400));
     }
 
     return () => {
@@ -69,11 +62,11 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[999999] bg-black flex flex-col items-center justify-center transition-all duration-700 ease-in-out select-none ${
+      className={`fixed inset-0 z-[999999] bg-black flex flex-col items-center justify-center transition-all duration-500 ease-out select-none ${
         isLoaded ? "opacity-0 pointer-events-none scale-105" : "opacity-100 scale-100"
       }`}
     >
-      {/* Background Preloader Video Container */}
+      {/* Background Preloader Video Container with XITE Logo Fallback */}
       <div className="relative w-full h-full max-w-5xl max-h-[80vh] flex items-center justify-center overflow-hidden px-4">
         <video
           ref={videoRef}
@@ -83,11 +76,12 @@ export default function Preloader() {
           loop
           playsInline
           preload="auto"
+          onError={() => setIsHidden(true)}
           className="w-full h-full object-contain pointer-events-none z-10"
         />
 
-        {/* Ambient Specular Radial Glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.85)_80%,rgba(0,0,0,1)_100%)] pointer-events-none" />
+        {/* Specular Radial Glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,rgba(0,0,0,0.85)_70%,rgba(0,0,0,1)_100%)] pointer-events-none" />
       </div>
 
       {/* Sleek Bottom Loading Bar & Percentage Counter */}
