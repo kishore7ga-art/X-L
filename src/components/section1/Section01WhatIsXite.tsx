@@ -38,7 +38,7 @@ export default function Section01WhatIsXite() {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.8,
+          scrub: 0.1,
         },
       }).to(
         frameObj,

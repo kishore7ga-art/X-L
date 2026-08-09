@@ -38,7 +38,7 @@ export default function Section13BuildWhatComesNext() {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.8,
+          scrub: 0.1,
         },
       }).to(
         frameObj,
