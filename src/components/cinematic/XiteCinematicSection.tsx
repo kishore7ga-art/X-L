@@ -5,13 +5,13 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Cpu,
   Layers,
   Zap,
 } from "lucide-react";
+import XiteLogo from "../XiteLogo";
 import GlassCard from "./GlassCard";
 import CinematicVideoStage from "./CinematicVideoStage";
 
@@ -154,7 +154,7 @@ export default function XiteCinematicSection() {
             className="absolute flex flex-col items-center max-w-3xl px-4 pointer-events-auto"
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] backdrop-blur-xl text-xs font-mono tracking-widest text-neutral-300 mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-white/80" />
+              <XiteLogo className="w-3.5 h-3.5" />
               <span>XITE CINEMATIC ARCHITECTURE</span>
             </div>
 

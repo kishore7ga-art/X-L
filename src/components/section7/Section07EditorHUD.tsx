@@ -1,7 +1,8 @@
 "use client";
 
 import { forwardRef } from "react";
-import { MousePointer, Type, Image as ImageIcon, Move, Copy, LayoutGrid, Eye, Sparkles } from "lucide-react";
+import { MousePointer, Type, Image as ImageIcon, Move, Copy, LayoutGrid, Eye } from "lucide-react";
+import XiteLogo from "../XiteLogo";
 import GlassCard from "../cinematic/GlassCard";
 
 interface Section07EditorHUDProps {
@@ -25,8 +26,8 @@ const Section07EditorHUD = forwardRef<HTMLDivElement, Section07EditorHUDProps>(
         <GlassCard className="p-4 sm:p-5 backdrop-blur-3xl bg-black/85 border-white/[0.12] shadow-[0_25px_90px_rgba(0,0,0,0.95)]">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/[0.05] border border-white/[0.1]">
-                <Sparkles className="w-4 h-4 text-white" />
+              <div className="p-1.5 rounded-xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center">
+                <XiteLogo className="w-4 h-4" />
               </div>
               <div className="text-left">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase block">
