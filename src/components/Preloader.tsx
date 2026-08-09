@@ -9,24 +9,35 @@ export default function Preloader() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // 1. Simulate asset loading progress smoothly up to 100%
+    // 1. Force muted video autoplay with promise error handling
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch((err) => {
+        console.warn("Preloader video autoplay fallback:", err);
+      });
+    }
+
+    // 2. Smooth progress increment up to 100%
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
-        if (prev >= 95) {
+        if (prev >= 98) {
           clearInterval(interval);
-          return 95;
+          return 100;
         }
-        return prev + Math.floor(Math.random() * 8 + 4);
+        return prev + Math.floor(Math.random() * 12 + 6);
       });
-    }, 120);
+    }, 100);
 
     const handleComplete = () => {
       setLoadingProgress(100);
       setTimeout(() => {
         setIsLoaded(true);
-        setTimeout(() => setIsHidden(true), 800);
-      }, 500);
+        setTimeout(() => setIsHidden(true), 600);
+      }, 400);
     };
+
+    // Ensure preloader completes after max 2.5s fallback
+    const safetyTimeout = setTimeout(handleComplete, 2200);
 
     if (document.readyState === "complete") {
       setTimeout(handleComplete, 1200);
@@ -36,6 +47,7 @@ export default function Preloader() {
 
     return () => {
       clearInterval(interval);
+      clearTimeout(safetyTimeout);
     };
   }, []);
 
@@ -43,7 +55,7 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[999999] bg-black flex flex-col items-center justify-center transition-all duration-800 ease-in-out select-none ${
+      className={`fixed inset-0 z-[999999] bg-black flex flex-col items-center justify-center transition-all duration-700 ease-in-out select-none ${
         isLoaded ? "opacity-0 pointer-events-none scale-105" : "opacity-100 scale-100"
       }`}
     >
@@ -56,7 +68,8 @@ export default function Preloader() {
           muted
           loop
           playsInline
-          className="w-full h-full object-contain pointer-events-none"
+          preload="auto"
+          className="w-full h-full object-contain pointer-events-none z-10"
         />
 
         {/* Ambient Specular Radial Glow */}
