@@ -5,10 +5,24 @@ import { useEffect, useState, useRef } from "react";
 export default function Preloader() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isHidden, setIsHidden] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("xite_preloader_has_shown") === "true";
+    }
+    return false;
+  });
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (isHidden) return;
+
+    // Mark as shown in sessionStorage so scrolling & navigation never trigger preloader again
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("xite_preloader_has_shown", "true");
+      }
+    } catch {}
+
     // 1. Force muted video autoplay with promise error handling
     if (videoRef.current) {
       videoRef.current.muted = true;
