@@ -45,7 +45,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, canvas, section {
+canvas, section {
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
