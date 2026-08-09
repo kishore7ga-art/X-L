@@ -99,13 +99,6 @@ const Section02Canvas = forwardRef<Section02CanvasRef, Section02CanvasProps>(
           ref={canvasRef}
           className={`w-full h-full object-cover transform-gpu will-change-transform ${className}`}
         />
-
-        {/* Subtle Loading Progress Bar for Asset Preloading */}
-        {loadedCount < totalFrames && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/80 border border-white/10 backdrop-blur-md text-[10px] font-mono text-neutral-400 z-30 pointer-events-none transition-opacity duration-500">
-            PRELOADING CUSTOMIZATION ASSETS: {Math.round((loadedCount / totalFrames) * 100)}%
-          </div>
-        )}
       </div>
     );
   }
