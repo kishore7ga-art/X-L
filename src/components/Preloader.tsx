@@ -33,24 +33,20 @@ export default function Preloader() {
           clearInterval(interval);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 20 + 15);
+        return prev + Math.floor(Math.random() * 8 + 5);
       });
-    }, 50);
+    }, 100);
 
     const handleComplete = () => {
       setLoadingProgress(100);
-      setIsLoaded(true);
-      setTimeout(() => setIsHidden(true), 300);
+      setTimeout(() => {
+        setIsLoaded(true);
+        setTimeout(() => setIsHidden(true), 600);
+      }, 300);
     };
 
-    // Instant safety fallback: max 800ms preloader duration
-    const safetyTimeout = setTimeout(handleComplete, 800);
-
-    if (document.readyState === "complete") {
-      setTimeout(handleComplete, 400);
-    } else {
-      window.addEventListener("load", () => setTimeout(handleComplete, 400));
-    }
+    // Allow 2.0s duration so user sees full preloader video animation
+    const safetyTimeout = setTimeout(handleComplete, 2000);
 
     return () => {
       clearInterval(interval);
