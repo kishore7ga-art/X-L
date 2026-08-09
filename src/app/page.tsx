@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import Section01WhatIsXite from "@/components/section1/Section01WhatIsXite";
 import Section02BuildItYourWay from "@/components/section2/Section02BuildItYourWay";
 import Section03EveryScreen from "@/components/section3/Section03EveryScreen";
@@ -17,9 +16,7 @@ import Section13BuildWhatComesNext from "@/components/section13/Section13BuildWh
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#000000] text-white pt-16">
-      <Navbar />
-
+    <main className="min-h-screen bg-[#000000] text-white">
       {/* SECTION 01 */}
       <Section01WhatIsXite />
 
