@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xite3D — Next-Gen Institutional Web Builder",
-  description: "Next.js 16, React 19, GSAP, Lenis, Framer Motion & Tailwind CSS 4",
+  title: "XITE — Next-Gen Institutional Web Builder",
+  description: "Create, customize, and publish professional websites with XITE visual builder.",
+  icons: {
+    icon: "/xite-logo.png",
+    shortcut: "/xite-logo.png",
+    apple: "/xite-logo.png",
+  },
 };
 
 export default function RootLayout({
