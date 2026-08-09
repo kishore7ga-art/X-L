@@ -1,69 +1,60 @@
-import Image from "next/image";
+"use client";
+
+import Section01WhatIsXite from "@/components/section1/Section01WhatIsXite";
+import Section02BuildItYourWay from "@/components/section2/Section02BuildItYourWay";
+import Section03EveryScreen from "@/components/section3/Section03EveryScreen";
+import Section04YourPages from "@/components/section4/Section04YourPages";
+import Section05DesignedFromSections from "@/components/section5/Section05DesignedFromSections";
+import Section06YourBrand from "@/components/section6/Section06YourBrand";
+import Section07YourControl from "@/components/section7/Section07YourControl";
+import Section08EveryInstitution from "@/components/section8/Section08EveryInstitution";
+import Section09MakeItYours from "@/components/section9/Section09MakeItYours";
+import Section10CompleteGovernance from "@/components/section10/Section10CompleteGovernance";
+import Section11EngineeredForScale from "@/components/section11/Section11EngineeredForScale";
+import Section12OneExperience from "@/components/section12/Section12OneExperience";
+import Section13BuildWhatComesNext from "@/components/section13/Section13BuildWhatComesNext";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen bg-[#000000] text-white">
+      {/* SECTION 01 */}
+      <Section01WhatIsXite />
+
+      {/* SECTION 02 */}
+      <Section02BuildItYourWay />
+
+      {/* SECTION 03 */}
+      <Section03EveryScreen />
+
+      {/* SECTION 04 */}
+      <Section04YourPages />
+
+      {/* SECTION 05 */}
+      <Section05DesignedFromSections />
+
+      {/* SECTION 06 */}
+      <Section06YourBrand />
+
+      {/* SECTION 07 */}
+      <Section07YourControl />
+
+      {/* SECTION 08 */}
+      <Section08EveryInstitution />
+
+      {/* SECTION 09 */}
+      <Section09MakeItYours />
+
+      {/* SECTION 10 */}
+      <Section10CompleteGovernance />
+
+      {/* SECTION 11 */}
+      <Section11EngineeredForScale />
+
+      {/* SECTION 12 */}
+      <Section12OneExperience />
+
+      {/* SECTION 13 */}
+      <Section13BuildWhatComesNext />
+    </main>
   );
 }
