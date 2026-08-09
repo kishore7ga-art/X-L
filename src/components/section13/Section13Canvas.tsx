@@ -18,33 +18,6 @@ const Section13Canvas = forwardRef<Section13CanvasRef, Section13CanvasProps>(
     const [loadedCount, setLoadedCount] = useState(0);
     const currentFrameRef = useRef(0);
 
-    // Preload images into memory
-    useEffect(() => {
-      let isMounted = true;
-      const loadedImages: HTMLImageElement[] = [];
-      let count = 0;
-
-      for (let i = 1; i <= totalFrames; i++) {
-        const img = new Image();
-        const frameNum = String(i).padStart(3, "0");
-        img.src = `/section13/ezgif-frame-${frameNum}.jpg`;
-
-        img.onload = () => {
-          if (!isMounted) return;
-          count++;
-          setLoadedCount(count);
-        };
-
-        loadedImages.push(img);
-      }
-
-      imagesRef.current = loadedImages;
-
-      return () => {
-        isMounted = false;
-      };
-    }, [totalFrames]);
-
     // Draw frame to canvas with object-fit: cover
     const renderFrame = useCallback((frameIdx: number) => {
       const canvas = canvasRef.current;
@@ -68,6 +41,42 @@ const Section13Canvas = forwardRef<Section13CanvasRef, Section13CanvasProps>(
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       ctx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
     }, []);
+
+    // Preload images into memory
+    useEffect(() => {
+      let isMounted = true;
+      const loadedImages: HTMLImageElement[] = [];
+      let count = 0;
+
+      const fallbackTimer = setTimeout(() => {
+        if (isMounted) setLoadedCount(totalFrames);
+      }, 2500);
+
+      for (let i = 1; i <= totalFrames; i++) {
+        const img = new Image();
+        const frameNum = String(i).padStart(3, "0");
+        img.src = `/section13/ezgif-frame-${frameNum}.jpg`;
+
+        const handleLoad = () => {
+          if (!isMounted) return;
+          count++;
+          setLoadedCount(count);
+          if (count === 1) renderFrame(0);
+        };
+
+        img.onload = handleLoad;
+        img.onerror = handleLoad;
+
+        loadedImages.push(img);
+      }
+
+      imagesRef.current = loadedImages;
+
+      return () => {
+        isMounted = false;
+        clearTimeout(fallbackTimer);
+      };
+    }, [totalFrames, renderFrame]);
 
     // Handle Window Resize for canvas resolution
     useEffect(() => {
