@@ -5,23 +5,10 @@ import { useEffect, useState, useRef } from "react";
 export default function Preloader() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isHidden, setIsHidden] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("xite_preloader_has_shown") === "true";
-    }
-    return false;
-  });
+  const [isHidden, setIsHidden] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (isHidden) return;
-
-    try {
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("xite_preloader_has_shown", "true");
-      }
-    } catch {}
-
     if (videoRef.current) {
       videoRef.current.muted = true;
       videoRef.current.play().catch(() => {});
