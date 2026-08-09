@@ -27,7 +27,7 @@ const Section07EditorHUD = forwardRef<HTMLDivElement, Section07EditorHUDProps>(
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center">
-                <XiteLogo className="w-4 h-4" />
+                
               </div>
               <div className="text-left">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase block">
