@@ -80,7 +80,7 @@ const Section13Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement
 
             {/* Primary Footer Action Button */}
             <a
-              href={process.env.NEXT_PUBLIC_EDITOR_URL || "https://xite.co.in"}
+              href={process.env.NEXT_PUBLIC_EDITOR_URL || "http://xite.meetkishore.in/editor/mec"}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white font-bold text-xs tracking-wider uppercase transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] cursor-pointer"
