@@ -44,7 +44,7 @@ export default function Preloader() {
           playsInline
           preload="auto"
           onError={() => setIsHidden(true)}
-          className="w-full h-full object-cover pointer-events-none z-10"
+          className="w-full h-full object-cover scale-[1.5] sm:scale-[1.6] md:scale-[1.7] transform-gpu pointer-events-none z-10"
         />
 
         {/* Specular Radial Ambient Glow Overlay */}
