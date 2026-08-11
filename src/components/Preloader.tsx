@@ -20,20 +20,20 @@ export default function Preloader() {
           clearInterval(interval);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 8 + 5);
+        return prev + Math.floor(Math.random() * 15 + 15);
       });
-    }, 100);
+    }, 40);
 
     const handleComplete = () => {
       setLoadingProgress(100);
       setTimeout(() => {
         setIsLoaded(true);
-        setTimeout(() => setIsHidden(true), 600);
-      }, 300);
+        setTimeout(() => setIsHidden(true), 400);
+      }, 150);
     };
 
-    // Allow 2.0s duration so user sees full preloader video animation
-    const safetyTimeout = setTimeout(handleComplete, 2000);
+    // Fast 1.0s duration for crisp instant website load
+    const safetyTimeout = setTimeout(handleComplete, 1000);
 
     return () => {
       clearInterval(interval);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useSequenceLoader } from "@/lib/useSequenceLoader";
 
 export interface Section01CanvasRef {
   setFrame: (index: number) => void;
@@ -9,74 +10,76 @@ export interface Section01CanvasRef {
 interface Section01CanvasProps {
   totalFrames?: number;
   className?: string;
+  inView?: boolean;
 }
 
 const Section01Canvas = forwardRef<Section01CanvasRef, Section01CanvasProps>(
-  ({ totalFrames = 300, className }, ref) => {
+  ({ totalFrames = 300, className, inView = true }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-    const [loadedCount, setLoadedCount] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isInView, setIsInView] = useState(inView);
     const currentFrameRef = useRef(0);
 
-    // Draw frame to canvas with object-fit: cover
-    const renderFrame = useCallback((frameIdx: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      const img = imagesRef.current[frameIdx];
-      if (!img || !img.complete) return;
-
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const imgWidth = img.naturalWidth || 1920;
-      const imgHeight = img.naturalHeight || 1080;
-
-      // Calculate object-fit: cover scale
-      const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight);
-      const x = (canvasWidth - imgWidth * scale) / 2;
-      const y = (canvasHeight - imgHeight * scale) / 2;
-
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      ctx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
-    }, []);
-
-    // Preload images into memory
+    // IntersectionObserver for proximity preloading
     useEffect(() => {
-      let isMounted = true;
-      const loadedImages: HTMLImageElement[] = [];
-      let count = 0;
-
-      const fallbackTimer = setTimeout(() => {
-        if (isMounted) setLoadedCount(totalFrames);
-      }, 2500);
-
-      for (let i = 1; i <= totalFrames; i++) {
-        const img = new Image();
-        const frameNum = String(i).padStart(3, "0");
-        img.src = `/section1/ezgif-frame-${frameNum}.jpg`;
-
-        const handleLoad = () => {
-          if (!isMounted) return;
-          count++;
-          setLoadedCount(count);
-          if (count === 1) renderFrame(0);
-        };
-
-        img.onload = handleLoad;
-        img.onerror = handleLoad;
-
-        loadedImages.push(img);
+      if (inView) {
+        setIsInView(true);
+        return;
       }
 
-      imagesRef.current = loadedImages;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "600px 0px 600px 0px" }
+      );
 
-      return () => {
-        isMounted = false;
-        clearTimeout(fallbackTimer);
-      };
-    }, [totalFrames, renderFrame]);
+      if (containerRef.current) {
+        observer.observe(containerRef.current);
+      }
+
+      return () => observer.disconnect();
+    }, [inView]);
+
+    const { getNearestLoadedFrame } = useSequenceLoader({
+      sectionPath: "/section1",
+      totalFrames,
+      step: 4,
+      inView: isInView,
+    });
+
+    const renderFrame = useCallback(
+      (frameIdx: number) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const img = getNearestLoadedFrame(frameIdx);
+        if (!img) return;
+
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const imgWidth = img.naturalWidth || 1920;
+        const imgHeight = img.naturalHeight || 1080;
+
+        const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight);
+        const x = (canvasWidth - imgWidth * scale) / 2;
+        const y = (canvasHeight - imgHeight * scale) / 2;
+
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
+      },
+      [getNearestLoadedFrame]
+    );
+
+    // Render initial frame once component mounts
+    useEffect(() => {
+      renderFrame(currentFrameRef.current);
+    }, [renderFrame]);
 
     // Handle Window Resize for canvas resolution
     useEffect(() => {
@@ -94,27 +97,24 @@ const Section01Canvas = forwardRef<Section01CanvasRef, Section01CanvasProps>(
     }, [renderFrame]);
 
     // Expose setFrame method to GSAP ScrollTrigger
-    useImperativeHandle(ref, () => ({
-      setFrame: (index: number) => {
-        const clampedIndex = Math.min(totalFrames - 1, Math.max(0, Math.floor(index)));
-        currentFrameRef.current = clampedIndex;
-        requestAnimationFrame(() => renderFrame(clampedIndex));
-      },
-    }), [totalFrames, renderFrame]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        setFrame: (index: number) => {
+          const clampedIndex = Math.min(totalFrames - 1, Math.max(0, Math.floor(index)));
+          currentFrameRef.current = clampedIndex;
+          requestAnimationFrame(() => renderFrame(clampedIndex));
+        },
+      }),
+      [totalFrames, renderFrame]
+    );
 
     return (
-      <div className="relative w-full h-full">
+      <div ref={containerRef} className="relative w-full h-full">
         <canvas
           ref={canvasRef}
           className={`w-full h-full object-cover transform-gpu will-change-transform ${className}`}
         />
-
-        {/* Subtle Loading Progress Bar for Asset Preloading */}
-        {loadedCount < totalFrames && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/80 border border-white/10 backdrop-blur-md text-[10px] font-mono text-neutral-400 z-30 pointer-events-none transition-opacity duration-500">
-            LOADING EXPERIENCE: {Math.round((loadedCount / totalFrames) * 100)}%
-          </div>
-        )}
       </div>
     );
   }

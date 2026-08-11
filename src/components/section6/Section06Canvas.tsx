@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useSequenceLoader } from "@/lib/useSequenceLoader";
 
 export interface Section06CanvasRef {
   setFrame: (index: number) => void;
@@ -9,65 +10,76 @@ export interface Section06CanvasRef {
 interface Section06CanvasProps {
   totalFrames?: number;
   className?: string;
+  inView?: boolean;
 }
 
 const Section06Canvas = forwardRef<Section06CanvasRef, Section06CanvasProps>(
-  ({ totalFrames = 300, className }, ref) => {
+  ({ totalFrames = 300, className, inView = false }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
-    const [loadedCount, setLoadedCount] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isInView, setIsInView] = useState(inView);
     const currentFrameRef = useRef(0);
 
-    // Preload images into memory
+    // IntersectionObserver for proximity preloading
     useEffect(() => {
-      let isMounted = true;
-      const loadedImages: HTMLImageElement[] = [];
-      let count = 0;
-
-      for (let i = 1; i <= totalFrames; i++) {
-        const img = new Image();
-        const frameNum = String(i).padStart(3, "0");
-        img.src = `/section6/ezgif-frame-${frameNum}.jpg`;
-
-        img.onload = () => {
-          if (!isMounted) return;
-          count++;
-          setLoadedCount(count);
-        };
-
-        loadedImages.push(img);
+      if (inView) {
+        setIsInView(true);
+        return;
       }
 
-      imagesRef.current = loadedImages;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "600px 0px 600px 0px" }
+      );
 
-      return () => {
-        isMounted = false;
-      };
-    }, [totalFrames]);
+      if (containerRef.current) {
+        observer.observe(containerRef.current);
+      }
 
-    // Draw frame to canvas with object-fit: cover
-    const renderFrame = useCallback((frameIdx: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      return () => observer.disconnect();
+    }, [inView]);
 
-      const img = imagesRef.current[frameIdx];
-      if (!img || !img.complete) return;
+    const { getNearestLoadedFrame } = useSequenceLoader({
+      sectionPath: "/section6",
+      totalFrames,
+      step: 4,
+      inView: isInView,
+    });
 
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const imgWidth = img.naturalWidth || 1920;
-      const imgHeight = img.naturalHeight || 1080;
+    const renderFrame = useCallback(
+      (frameIdx: number) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-      // Calculate object-fit: cover scale
-      const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight);
-      const x = (canvasWidth - imgWidth * scale) / 2;
-      const y = (canvasHeight - imgHeight * scale) / 2;
+        const img = getNearestLoadedFrame(frameIdx);
+        if (!img) return;
 
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      ctx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
-    }, []);
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const imgWidth = img.naturalWidth || 1920;
+        const imgHeight = img.naturalHeight || 1080;
+
+        const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight);
+        const x = (canvasWidth - imgWidth * scale) / 2;
+        const y = (canvasHeight - imgHeight * scale) / 2;
+
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
+      },
+      [getNearestLoadedFrame]
+    );
+
+    // Render initial frame once component mounts
+    useEffect(() => {
+      renderFrame(currentFrameRef.current);
+    }, [renderFrame]);
 
     // Handle Window Resize for canvas resolution
     useEffect(() => {
@@ -85,16 +97,20 @@ const Section06Canvas = forwardRef<Section06CanvasRef, Section06CanvasProps>(
     }, [renderFrame]);
 
     // Expose setFrame method to GSAP ScrollTrigger
-    useImperativeHandle(ref, () => ({
-      setFrame: (index: number) => {
-        const clampedIndex = Math.min(totalFrames - 1, Math.max(0, Math.floor(index)));
-        currentFrameRef.current = clampedIndex;
-        requestAnimationFrame(() => renderFrame(clampedIndex));
-      },
-    }), [totalFrames, renderFrame]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        setFrame: (index: number) => {
+          const clampedIndex = Math.min(totalFrames - 1, Math.max(0, Math.floor(index)));
+          currentFrameRef.current = clampedIndex;
+          requestAnimationFrame(() => renderFrame(clampedIndex));
+        },
+      }),
+      [totalFrames, renderFrame]
+    );
 
     return (
-      <div className="relative w-full h-full">
+      <div ref={containerRef} className="relative w-full h-full">
         <canvas
           ref={canvasRef}
           className={`w-full h-full object-cover transform-gpu will-change-transform ${className}`}
