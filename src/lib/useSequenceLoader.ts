@@ -7,6 +7,7 @@ interface UseSequenceLoaderOptions {
   totalFrames?: number;
   step?: number; // Keyframe step, default 4 (every 4th frame loaded first)
   inView?: boolean;
+  isHeroSection?: boolean;
 }
 
 export function useSequenceLoader({
@@ -14,6 +15,7 @@ export function useSequenceLoader({
   totalFrames = 300,
   step = 4,
   inView = true,
+  isHeroSection = false,
 }: UseSequenceLoaderOptions) {
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const loadedFlagsRef = useRef<boolean[]>(new Array(totalFrames).fill(false));
@@ -43,17 +45,38 @@ export function useSequenceLoader({
       images[idx] = img;
 
       const frameNum = String(idx + 1).padStart(3, "0");
-      img.src = `${sectionPath}/ezgif-frame-${frameNum}.jpg`;
+      // Use WebP format for fast 45%+ smaller bandwidth
+      const primaryUrl = `${sectionPath}/ezgif-frame-${frameNum}.webp`;
+      const fallbackUrl = `${sectionPath}/ezgif-frame-${frameNum}.jpg`;
 
       const handleLoad = () => {
         if (!isMounted) return;
         loadedFlags[idx] = true;
         count++;
         setLoadedCount((prev) => Math.min(totalFrames, prev + 1));
+
+        // Dispatch global progress event for Hero Section preloader tracking
+        if (isHeroSection && typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("xite:hero-progress", {
+              detail: {
+                loaded: count,
+                total: totalFrames,
+                percentage: Math.min(100, Math.round((count / (totalFrames / step)) * 100)),
+              },
+            })
+          );
+        }
       };
 
       img.onload = handleLoad;
-      img.onerror = handleLoad;
+      img.onerror = () => {
+        // Fallback to JPEG if WebP fails
+        img.onerror = handleLoad;
+        img.src = fallbackUrl;
+      };
+
+      img.src = primaryUrl;
     };
 
     // Pass 1: Load keyframes immediately (every step-th frame)
@@ -61,7 +84,6 @@ export function useSequenceLoader({
     for (let i = 0; i < totalFrames; i += step) {
       keyframeIndices.push(i);
     }
-    // Also include last frame
     if (keyframeIndices[keyframeIndices.length - 1] !== totalFrames - 1) {
       keyframeIndices.push(totalFrames - 1);
     }
@@ -75,13 +97,13 @@ export function useSequenceLoader({
           loadSingleFrame(i);
         }
       }
-    }, 150);
+    }, 200);
 
     return () => {
       isMounted = false;
       clearTimeout(idleTimer);
     };
-  }, [sectionPath, totalFrames, step, inView]);
+  }, [sectionPath, totalFrames, step, inView, isHeroSection]);
 
   // Return nearest loaded frame index to guarantee zero flicker
   const getNearestLoadedFrame = useCallback(

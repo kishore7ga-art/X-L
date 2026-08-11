@@ -10,18 +10,34 @@ export default function Preloader() {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
+      videoRef.current.loop = true;
       videoRef.current.play().catch(() => {});
     }
 
-    const handleComplete = () => {
+    let isFinished = false;
+
+    const completePreloader = () => {
+      if (isFinished) return;
+      isFinished = true;
       setIsLoaded(true);
-      setTimeout(() => setIsHidden(true), 500);
+      setTimeout(() => setIsHidden(true), 600);
     };
 
-    // 2.0s duration so user views the full-screen preloader animation smoothly
-    const safetyTimeout = setTimeout(handleComplete, 2000);
+    // Listen to real asset loading event from Section 1 sequence loader
+    const handleHeroProgress = (e: Event) => {
+      const customEvt = e as CustomEvent<{ percentage: number }>;
+      if (customEvt.detail && customEvt.detail.percentage >= 100) {
+        completePreloader();
+      }
+    };
+
+    window.addEventListener("xite:hero-progress", handleHeroProgress);
+
+    // Fallback safety timeout (4.0s max) if network is fast or slow
+    const safetyTimeout = setTimeout(completePreloader, 4000);
 
     return () => {
+      window.removeEventListener("xite:hero-progress", handleHeroProgress);
       clearTimeout(safetyTimeout);
     };
   }, []);

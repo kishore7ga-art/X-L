@@ -49,6 +49,7 @@ const Section01Canvas = forwardRef<Section01CanvasRef, Section01CanvasProps>(
       totalFrames,
       step: 4,
       inView: isInView,
+      isHeroSection: true,
     });
 
     const renderFrame = useCallback(
