@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 
 export default function Preloader() {
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,29 +13,15 @@ export default function Preloader() {
       videoRef.current.play().catch(() => {});
     }
 
-    const interval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 98) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 15 + 15);
-      });
-    }, 40);
-
     const handleComplete = () => {
-      setLoadingProgress(100);
-      setTimeout(() => {
-        setIsLoaded(true);
-        setTimeout(() => setIsHidden(true), 400);
-      }, 150);
+      setIsLoaded(true);
+      setTimeout(() => setIsHidden(true), 500);
     };
 
-    // Fast 1.0s duration for crisp instant website load
-    const safetyTimeout = setTimeout(handleComplete, 1000);
+    // 2.0s duration so user views the full-screen preloader animation smoothly
+    const safetyTimeout = setTimeout(handleComplete, 2000);
 
     return () => {
-      clearInterval(interval);
       clearTimeout(safetyTimeout);
     };
   }, []);
@@ -45,43 +30,27 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[999999] bg-black flex flex-col items-center justify-center transition-all duration-500 ease-out select-none ${
+      className={`fixed inset-0 z-[999999] bg-black flex items-center justify-center transition-all duration-700 ease-out select-none ${
         isLoaded ? "opacity-0 pointer-events-none scale-105" : "opacity-100 scale-100"
       }`}
     >
-      {/* Background Preloader Video Container with XITE Logo Fallback */}
-      <div className="relative w-full h-full max-w-5xl max-h-[80vh] flex items-center justify-center overflow-hidden px-4">
+      {/* Full Screen Preloader Video Container */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden bg-black">
         <video
           ref={videoRef}
           src="/preloader.mp4"
           autoPlay
           muted
-          loop
           playsInline
           preload="auto"
           onError={() => setIsHidden(true)}
-          className="w-full h-full object-contain pointer-events-none z-10"
+          className="w-full h-full object-cover pointer-events-none z-10"
         />
 
-        {/* Specular Radial Glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,rgba(0,0,0,0.85)_70%,rgba(0,0,0,1)_100%)] pointer-events-none" />
-      </div>
-
-      {/* Sleek Bottom Loading Bar & Percentage Counter */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 w-64 text-center z-10">
-        <div className="flex items-center justify-between w-full text-xs font-mono text-neutral-400 font-bold uppercase tracking-widest px-1">
-          <span>LOADING EXPERIENCE</span>
-          <span className="text-white">{loadingProgress}%</span>
-        </div>
-
-        {/* Progress Track */}
-        <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden p-[1px] border border-white/[0.1] backdrop-blur-md">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-500 transition-all duration-300 ease-out shadow-[0_0_12px_rgba(99,102,241,0.8)]"
-            style={{ width: `${loadingProgress}%` }}
-          />
-        </div>
+        {/* Specular Radial Ambient Glow Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08)_0%,rgba(0,0,0,0.4)_70%,rgba(0,0,0,0.8)_100%)] pointer-events-none z-20" />
       </div>
     </div>
   );
 }
+
