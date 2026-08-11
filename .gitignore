@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ignore large video and binary dumps
+*.exe
+ffmpeg.exe
+*.mp4
+!public/preloader.mp4
+
