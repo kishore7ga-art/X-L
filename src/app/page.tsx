@@ -10,9 +10,6 @@ import Section07YourControl from "@/components/section7/Section07YourControl";
 import Section08EveryInstitution from "@/components/section8/Section08EveryInstitution";
 import Section09MakeItYours from "@/components/section9/Section09MakeItYours";
 import Section10CompleteGovernance from "@/components/section10/Section10CompleteGovernance";
-import Section11EngineeredForScale from "@/components/section11/Section11EngineeredForScale";
-import Section12OneExperience from "@/components/section12/Section12OneExperience";
-import Section13BuildWhatComesNext from "@/components/section13/Section13BuildWhatComesNext";
 
 export default function Home() {
   return (
@@ -46,15 +43,6 @@ export default function Home() {
 
       {/* SECTION 10 */}
       <Section10CompleteGovernance />
-
-      {/* SECTION 11 */}
-      <Section11EngineeredForScale />
-
-      {/* SECTION 12 */}
-      <Section12OneExperience />
-
-      {/* SECTION 13 */}
-      <Section13BuildWhatComesNext />
     </main>
   );
 }
