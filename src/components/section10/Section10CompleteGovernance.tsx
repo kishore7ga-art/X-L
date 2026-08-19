@@ -65,11 +65,11 @@ export default function Section10CompleteGovernance() {
     >
       <div className="sticky top-0 h-screen w-full flex flex-col justify-between items-center overflow-hidden bg-[#000000]">
         <a
-          href="https://xite.meetkishore.in"
+          href="https://xite.co.in"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute inset-0 w-full h-full z-20 cursor-pointer group flex flex-col justify-between p-6 sm:p-10 no-underline"
-          title="Click anywhere to visit xite.meetkishore.in"
+          title="Click anywhere to visit xite.co.in"
         >
           {/* Canvas Background */}
           <div className="absolute inset-0 w-full h-full z-0 transform-gpu">
@@ -85,7 +85,7 @@ export default function Section10CompleteGovernance() {
           <div className="relative z-30 self-center mb-8 px-7 py-3.5 rounded-full bg-black/80 border border-white/20 backdrop-blur-2xl text-white flex items-center gap-3 transition-all duration-300 group-hover:scale-105 group-hover:bg-white group-hover:text-black group-hover:border-white shadow-[0_0_40px_rgba(255,255,255,0.25)]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse group-hover:bg-black" />
             <span className="text-xs font-mono font-bold uppercase tracking-widest">
-              EXPLORE XITE PLATFORM — xite.meetkishore.in
+              EXPLORE XITE PLATFORM — xite.co.in
             </span>
             <svg
               className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5"
